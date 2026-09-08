@@ -290,3 +290,26 @@ Use JavaScript numbers. Accounting comparisons should use a scale-aware toleranc
 rounds, PRNG states and committed trajectory regression fixtures. Do not round
 wealth to cents inside the engine. Statistical expectations do not imply that a
 single run must equal its expected value or that inequality increases every round.
+
+
+## Mobility analysis contract
+
+Mobility compares the same 100 unique IDs across two nonnegative finite wealth
+snapshots, without changing either snapshot or consuming random draws. Sort copies.
+Spearman correlation is Pearson correlation of ascending wealth midranks (0–99):
+all members of a wealth tie receive their average rank. Return null, not zero, if
+either rank variance is zero. Percentile rank is midrank / 99; mean absolute rank
+movement averages absolute endpoint differences over 100 people.
+
+Quintiles sort by (wealth ascending, ID ascending), exactly 20 people per group.
+Transition cell (i,j) = count(reference quintile i, current quintile j) / 20.
+Rows and columns sum to one. Bottom escape = 1 − cell(0,0); top persistence =
+cell(4,4). ID tie-breaking is arbitrary at an equal start and must be disclosed.
+Neither statistic measures intermediate transitions or whether someone ever escaped.
+
+Identity, positive affine wealth transformations and input array permutation must
+preserve these metrics. Identical untied ranks give correlation 1 and movement 0;
+reversed untied ranks give correlation −1. Equal endpoints have undefined correlation.
+Capturing a UI reference pauses playback and copies only participants and round;
+it must leave engine state, seed and history unchanged. Reset/clone start at round
+zero. Reference capture is analysis, not a fork or a policy intervention.

@@ -218,12 +218,14 @@ visible effect histograms, identical-rule zero effects, and mobile tooltip place
 
 ### Next — measurement and a simple benchmark economy
 
-- [ ] Mobility: Spearman rank correlation, quintile transition matrix, bottom-
+- [x] Scenario mobility: Spearman rank correlation, quintile transition matrix, bottom-
   quintile escape, top-quintile persistence and mean absolute percentile movement.
   Choose a reference round explicitly. Equal starting wealth has no meaningful
   initial hierarchy: use midranks and report undefined correlation when variance
   is zero. Deterministic ID tie-breaking for quintiles must be disclosed as
   arbitrary membership, not evidence of initial social rank.
+- [ ] Extend mobility into paired batch reporting with an explicit reference round,
+  matched valid-pair denominators for undefined correlations, and checkpoint summaries.
 - [ ] Opportunity capture: top-10% and bottom-50% opportunity shares, external-gain
   shares and opportunity-access Gini. Define whether group membership is frozen
   at a checkpoint or measured immediately before each event; these answer different
@@ -307,3 +309,17 @@ work. Identical tax rules are not a fixed shared budget once trajectories diverg
 Verification: 88 tests pass, including the original v1/v2 fixtures and new fiscal
 trajectory fixtures. Production build and desktop/mobile browser checks pass;
 paired fiscal outputs and sharing were exercised through the real worker/UI.
+
+
+## Git baseline and mobility
+
+The existing application, documentation and exact simulation fixtures are now in
+Git. README records the product direction and TODO records remaining scope.
+Scenario mobility uses an explicit captured reference, retained across tab switches.
+Capturing pauses playback; cloning/resetting starts at round zero. This adds analysis
+without changing economic transitions or random draws. Paired mobility remains
+tracked separately because undefined correlations need explicit aggregation rules.
+
+Mobility verification: 93 tests and production build pass, including unchanged
+economic trajectory fixtures. Browser checks cover equal-start interpretation,
+reference capture, subsequent movement and mobile help positioning.

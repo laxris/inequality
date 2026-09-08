@@ -25,7 +25,7 @@ describe("scenario isolation and playback", () => {
     expect(clone.config).toEqual(source.config);
     expect(clone.config).not.toBe(source.config);
     expect(clone.config.externalProcesses[0]).not.toBe(
-      source.config.externalProcesses[0],
+      source.config.externalProcesses[0]
     );
     expect(clone.draft).not.toBe(clone.config);
     expect(clone.history).not.toBe(source.history);
@@ -80,14 +80,14 @@ describe("scenario isolation and playback", () => {
     workspace = tick(tick(workspace));
     expect(workspace.scenarios[1]).toEqual(second);
     expect(workspaceReducer(workspace, { type: "step", id: 2 })).toBe(
-      workspace,
+      workspace
     );
     expect(workspaceReducer(workspace, { type: "toggle", id: 2 })).toBe(
-      workspace,
+      workspace
     );
     workspace = workspaceReducer(workspace, { type: "select", id: 2 });
     expect(workspaceReducer(workspace, { type: "step", id: 2 })).toBe(
-      workspace,
+      workspace
     ); // Pending edit.
     expect(workspace.scenarios[1]).toEqual(second);
   });
@@ -109,10 +109,10 @@ describe("scenario isolation and playback", () => {
     workspace = tick(tick(workspace));
     expect(workspace.scenarios[0].running).toBe(false);
     expect(workspace.scenarios[0].state).toEqual(
-      runRounds(source.state, source.config, 12),
+      runRounds(source.state, source.config, 12)
     );
     expect(workspace.scenarios[0].history.map((p) => p.round)).toEqual(
-      Array.from({ length: 13 }, (_, i) => i),
+      Array.from({ length: 13 }, (_, i) => i)
     );
     expect(tick(workspace)).toBe(workspace);
     workspace = workspaceReducer(workspace, {
@@ -121,7 +121,7 @@ describe("scenario isolation and playback", () => {
       value: NaN,
     });
     expect(workspaceReducer(workspace, { type: "run-to-target", id: 1 })).toBe(
-      workspace,
+      workspace
     );
   });
 
@@ -171,10 +171,10 @@ describe("scenario isolation and playback", () => {
     expect(first.state.round).toBe(100);
     expect(second.state.round).toBe(100);
     expect(first.state).toEqual(
-      runRounds(initial().scenarios[0].state, first.config, 100),
+      runRounds(initial().scenarios[0].state, first.config, 100)
     );
     expect(second.state).toEqual(
-      runRounds(initial().scenarios[0].state, second.config, 100),
+      runRounds(initial().scenarios[0].state, second.config, 100)
     );
     expect(first.state.metrics.gini).not.toBe(second.state.metrics.gini);
     expect(first.config.redistribution).toEqual({
@@ -186,4 +186,37 @@ describe("scenario isolation and playback", () => {
       fraction: 0.5,
     });
   });
+});
+
+it("captures a scenario-local mobility reference, pauses playback, and resets clones to zero", () => {
+  let workspace = createWorkspace(presets[0].experiment);
+  workspace = workspaceReducer(workspace, { type: "step", id: 1 });
+  workspace = workspaceReducer(workspace, { type: "toggle", id: 1 });
+  const before = structuredClone(workspace.scenarios[0].state);
+  const staleEpoch = workspace.playbackEpoch;
+  workspace = workspaceReducer(workspace, {
+    type: "mobility-reference",
+    id: 1,
+  });
+  expect(workspace.scenarios[0].running).toBe(false);
+  expect(workspace.scenarios[0].state).toEqual(before);
+  expect(workspace.scenarios[0].mobilityReference.round).toBe(1);
+  expect(workspace.scenarios[0].mobilityReference.participants).not.toBe(
+    workspace.scenarios[0].state.participants
+  );
+  expect(
+    workspaceReducer(workspace, { type: "tick", id: 1, epoch: staleEpoch })
+  ).toBe(workspace);
+  workspace = workspaceReducer(workspace, { type: "clone", id: 1 });
+  expect(workspace.scenarios[1].mobilityReference.round).toBe(0);
+  expect(workspace.scenarios[0].mobilityReference.participants).toEqual(
+    before.participants
+  );
+  workspace = workspaceReducer(workspace, { type: "select", id: 1 });
+  workspace = workspaceReducer(workspace, {
+    type: "reset",
+    id: 1,
+    config: presets[0].experiment,
+  });
+  expect(workspace.scenarios[0].mobilityReference.round).toBe(0);
 });

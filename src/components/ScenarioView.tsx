@@ -1,3 +1,4 @@
+import { Mobility } from "./Mobility";
 import { reportedMetrics, reliefIncidence } from "../simulation/metrics";
 import { Help, explanations } from "./Help";
 import { useState, type Dispatch } from "react";
@@ -394,6 +395,10 @@ export function ScenarioView({
         </p>
       )}
       <Charts history={session.history} state={state} />
+      <Mobility
+        scenario={session}
+        capture={() => dispatch({ type: "mobility-reference", id: session.id })}
+      />
     </>
   );
 }

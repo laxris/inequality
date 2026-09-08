@@ -13,8 +13,8 @@ wealth creation/destruction and fiscal policy. Seeded models and exact regressio
 fixtures make changes reproducible and refactors reviewable.
 
 The current implementation includes common random numbers, paired effect summaries,
-Treasury retention and hypothetical tax relief. Next we are adding mobility and
-opportunity-capture measurements, then labor income and controlled policy ablations.
+Treasury retention, hypothetical tax relief and scenario mobility. Next we are adding
+paired mobility and opportunity-capture measurements, then labor income and controlled policy ablations.
 [TODO.md](TODO.md) tracks scope and completion; [the simulation contract](src/simulation/AGENTS.md)
 defines the mathematical rules. Feature changes should update both their explanatory
 UI and these documents, and land in separate tested Git commits.
@@ -204,6 +204,24 @@ destination. To compare relief, clone it and enable relief in the treatment. Sel
 the two applied scenarios in Experiments. Matching tax rates does not match future
 revenue, and this release does not calibrate revenue-equivalent tax rates.
 
+## Mobility
+
+The **Who moves up or down?** panel compares participant identities at a stored
+reference round with the current round. Initially the reference is round zero.
+Run to a meaningful round, choose **Use current round as mobility reference**, then
+continue playback. Capturing pauses the scenario without altering its engine state.
+Only one participant snapshot is retained per scenario; it survives tab switches,
+but resets and clones start again at round zero. It is not exported in config URLs.
+
+Outputs include Spearman rank correlation, mean absolute percentile-rank movement,
+bottom-quintile escape, top-quintile persistence and a quintile transition matrix.
+These are endpoint comparisons, not counts of intermediate moves. Correlation and
+movement use average ranks for ties; correlation is undefined when either endpoint
+is entirely equal. Quintiles contain exactly 20 people, using ID to break wealth
+ties. At an equal start those groups are arbitrary, not established social ranks.
+Mobility currently describes each live scenario; paired batch mobility reporting
+is a subsequent extension.
+
 ## Code and verification
 
 - `src/simulation/`: pure TypeScript engine, types, seeded PRNG, configuration,
@@ -237,8 +255,8 @@ There is no lint configuration yet; TypeScript checks unused declarations.
 The engine composes arrays of processes and taxes. The initial UI exposes one
 transfer process, one external process, and one of each tax, income tax first.
 Shared URLs outside that composer scope are rejected with an explanation rather
-than silently hiding active rules. Only aggregate history and the latest
-participant state are retained in scenarios; batches retain checkpoint aggregates
+than silently hiding active rules. Aggregate history, the latest participant state and one mobility reference
+are retained in scenarios; batches retain checkpoint aggregates
 and final Lorenz shares. Forking, labor income, progressive brackets,
 revenue calibration, debt and saved scenario collections remain future work.
 See [TODO.md](TODO.md) for the next experimental capabilities.

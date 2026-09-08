@@ -3,6 +3,7 @@ import { reportedMetrics } from "./simulation/metrics";
 import { validateExperiment } from "./simulation/config";
 import type {
   Experiment,
+  Participant,
   HistoryPoint,
   SimulationState,
 } from "./simulation/types";
@@ -14,6 +15,7 @@ export interface Scenario {
   draft: Experiment;
   state: SimulationState;
   history: HistoryPoint[];
+  mobilityReference: { round: number; participants: Participant[] };
   running: boolean;
   speed: number;
   targetRound: number;
@@ -31,7 +33,13 @@ export type WorkspaceAction =
   | { type: "select"; id: number | null }
   | { type: "add"; config: Experiment }
   | {
-      type: "clone" | "delete" | "step" | "toggle" | "run-to-target";
+      type:
+        | "clone"
+        | "delete"
+        | "step"
+        | "toggle"
+        | "run-to-target"
+        | "mobility-reference";
       id: number;
     }
   | { type: "rename"; id: number; name: string }
@@ -58,6 +66,10 @@ function createScenario(
     draft: structuredClone(applied),
     state,
     history: [{ round: 0, ...reportedMetrics(state) }],
+    mobilityReference: {
+      round: 0,
+      participants: structuredClone(state.participants),
+    },
     running: false,
     speed: 1,
     targetRound: 100,
@@ -172,6 +184,16 @@ export function workspaceReducer(
   let next = scenario;
   try {
     switch (action.type) {
+      case "mobility-reference":
+        if (workspace.selectedId !== scenario.id) return workspace;
+        next = {
+          ...pause(scenario),
+          mobilityReference: {
+            round: scenario.state.round,
+            participants: structuredClone(scenario.state.participants),
+          },
+        };
+        break;
       case "rename":
         next = { ...scenario, name: action.name.slice(0, 80) };
         break;
