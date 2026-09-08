@@ -1,0 +1,425 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`model v1 exact trajectory regression fixtures > Equal-access investment 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.49815498154981563,
+      "gini": 0.0034247531664505825,
+      "meanWealth": 1002.7,
+      "medianWealth": 1000,
+      "richestWealth": 1040,
+      "top10Share": 0.10292211030218411,
+      "top1Share": 0.01037199561184801,
+      "totalWealth": 100270,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2271577934,
+    "round": 1,
+    "stateSha256": "3903038f400824dae345fdd41c227b574cd6772d4143f7e6e7255378a2685d8e",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.48598299472860984,
+      "gini": 0.019624642064023628,
+      "meanWealth": 1018.1385056000004,
+      "medianWealth": 1000,
+      "richestWealth": 1169.85856,
+      "top10Share": 0.10837474959752663,
+      "top1Share": 0.011490171067742784,
+      "totalWealth": 101813.85056000004,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1240942482,
+    "round": 10,
+    "stateSha256": "4f2e7509980b4cd3299a375d4f1e1997fba61110e3975e81ff48cdd83eaed47c",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.45577654514263155,
+      "gini": 0.06318467663788217,
+      "meanWealth": 1185.3734061232624,
+      "medianWealth": 1172.7727946588157,
+      "richestWealth": 1601.0322185676807,
+      "top10Share": 0.12274451663957765,
+      "top1Share": 0.013506564347548688,
+      "totalWealth": 118537.34061232624,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 3819489850,
+    "round": 100,
+    "stateSha256": "98ba72f42ef2cd49d29d385534f068157d6c99a2aa9834a3ea7eb2ce64f6972d",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Fair fixed-stake exchange 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.47500000000000026,
+      "gini": 0.025000000000000036,
+      "meanWealth": 1000,
+      "medianWealth": 1000,
+      "richestWealth": 1050,
+      "top10Share": 0.10499999999999998,
+      "top1Share": 0.0105,
+      "totalWealth": 100000,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2320366531,
+    "round": 1,
+    "stateSha256": "6b9737284c5b32018ae804f4dad0da5522498c0af42f735c4d098e4011abd61a",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.43300000000000033,
+      "gini": 0.09712000000000007,
+      "meanWealth": 1000,
+      "medianWealth": 1000,
+      "richestWealth": 1400,
+      "top10Share": 0.13,
+      "top1Share": 0.014,
+      "totalWealth": 100000,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1728828452,
+    "round": 10,
+    "stateSha256": "cd0b7a383975f2ab91e24d1d24fdcc727980b39f9bbb6d531c922cdab1f8829a",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.31550000000000017,
+      "gini": 0.25392,
+      "meanWealth": 1000,
+      "medianWealth": 1000,
+      "richestWealth": 2100,
+      "top10Share": 0.16849999999999998,
+      "top1Share": 0.021,
+      "totalWealth": 100000,
+      "zeroWealthCount": 1,
+    },
+    "randomState": 108414958,
+    "round": 100,
+    "stateSha256": "a79101d4b01014c401909d0332f3a217b2909c8a2dddaeaf82978ff59e221f3c",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Independent external shocks 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.47500000000000026,
+      "gini": 0.025000000000000036,
+      "meanWealth": 1000,
+      "medianWealth": 1000,
+      "richestWealth": 1050,
+      "top10Share": 0.10499999999999998,
+      "top1Share": 0.0105,
+      "totalWealth": 100000,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2767954910,
+    "round": 1,
+    "stateSha256": "3736148a42e1513a3b7e960df99a83e5383e4ae6415220f545db70907ad93466",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.4479591836734695,
+      "gini": 0.07353061224489799,
+      "meanWealth": 980,
+      "medianWealth": 1000,
+      "richestWealth": 1200,
+      "top10Share": 0.1224489795918367,
+      "top1Share": 0.012244897959183673,
+      "totalWealth": 98000,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1909744946,
+    "round": 10,
+    "stateSha256": "08cbc4700ef4c40d5fb0139740f1b8931a8ea2fcf00082a8f445c9cdc4621f7b",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.30472940029254025,
+      "gini": 0.2717747440273037,
+      "meanWealth": 1025.5,
+      "medianWealth": 1000,
+      "richestWealth": 2100,
+      "top10Share": 0.17844953681131157,
+      "top1Share": 0.020477815699658702,
+      "totalWealth": 102550,
+      "zeroWealthCount": 3,
+    },
+    "randomState": 1917579898,
+    "round": 100,
+    "stateSha256": "973605989010b8ff7e53237cd8cf75851219eec6c76362fc4cc42c5deae4c81b",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Investment + income redistribution 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.49847411987633405,
+      "gini": 0.002837538645656751,
+      "meanWealth": 1002.6999999999996,
+      "medianWealth": 1000.64,
+      "richestWealth": 1032.64,
+      "top10Share": 0.10234766131445105,
+      "top1Share": 0.010298593796748783,
+      "totalWealth": 100269.99999999996,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2271577934,
+    "round": 1,
+    "stateSha256": "8699f0732c05684f5fdb92232f393772dfc8ea8c6f77e1f450d23661fe527dae",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.48843538290880073,
+      "gini": 0.016598455102832536,
+      "meanWealth": 1018.1414377566807,
+      "medianWealth": 1005.3422285586872,
+      "richestWealth": 1140.258490276014,
+      "top10Share": 0.10684497915103187,
+      "top1Share": 0.011199411476546909,
+      "totalWealth": 101814.14377566807,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1240942482,
+    "round": 10,
+    "stateSha256": "d87bc36bbfa7a3b38b4f43b5b9d30eb231d74401602d8a9aa2273f983223e411",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.4634915910771771,
+      "gini": 0.0514190087341208,
+      "meanWealth": 1185.1944753939815,
+      "medianWealth": 1172.9690216417412,
+      "richestWealth": 1500.7011615947188,
+      "top10Share": 0.11850148827969348,
+      "top1Share": 0.012662066797905524,
+      "totalWealth": 118519.44753939814,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 3819489850,
+    "round": 100,
+    "stateSha256": "74d9f282ed889dfb11d235bed9a57a15a5f670d204ca8b5daa448638b0135454",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Investment + wealth redistribution 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.49366709883315046,
+      "gini": 0.009382216016754697,
+      "meanWealth": 1002.6999999999994,
+      "medianWealth": 990,
+      "richestWealth": 1040.135,
+      "top10Share": 0.10373341976663014,
+      "top1Share": 0.010373341976663016,
+      "totalWealth": 100269.99999999994,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2271577934,
+    "round": 1,
+    "stateSha256": "35312b9d2a91136080543f50b24db945c0eb699616521b7236ee053e1cc0f7e0",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.4911592359183299,
+      "gini": 0.011281613739184808,
+      "meanWealth": 1018.0949753384117,
+      "medianWealth": 1015.058617837944,
+      "richestWealth": 1083.2552206610244,
+      "top10Share": 0.10389600578141821,
+      "top1Share": 0.01064002128387829,
+      "totalWealth": 101809.49753384118,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1240942482,
+    "round": 10,
+    "stateSha256": "f79cf2a011e7b893fb5b57c910e74ff262b365b827d87137b752cdb7ad383ea8",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.49209722487113594,
+      "gini": 0.011046152388414904,
+      "meanWealth": 1185.4443633870274,
+      "medianWealth": 1181.0086086062688,
+      "richestWealth": 1298.4014264048396,
+      "top10Share": 0.10410872152585837,
+      "top1Share": 0.010952866844759155,
+      "totalWealth": 118544.43633870274,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 3819489850,
+    "round": 100,
+    "stateSha256": "a8d5c6e31162d79087865d326cf56c9d34509f470bdbba9d112acc6617a8a29a",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Universal multiplicative returns 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.4894703254626676,
+      "gini": 0.014109763880025494,
+      "meanWealth": 1018.55,
+      "medianWealth": 1040,
+      "richestWealth": 1040,
+      "top10Share": 0.10210593490746651,
+      "top1Share": 0.01021059349074665,
+      "totalWealth": 101855,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2767954910,
+    "round": 1,
+    "stateSha256": "e432a48bd0b93bb580d114017c882b4292c6b75de8df4a3a9bd814d0f5bfa9e4",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.46208386555385594,
+      "gini": 0.05060341792745698,
+      "meanWealth": 1187.3304588542958,
+      "medianWealth": 1219.6837064451684,
+      "richestWealth": 1480.244284918344,
+      "top10Share": 0.11400482502681925,
+      "top1Share": 0.01246699496235187,
+      "totalWealth": 118733.04588542957,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1909744946,
+    "round": 10,
+    "stateSha256": "050dea8e636d71e4b795b8ed79194104c561a6410f0d50b37d49729e6779f6dd",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.39245709544750457,
+      "gini": 0.1566938167290725,
+      "meanWealth": 5595.284952390069,
+      "medianWealth": 5628.041970395629,
+      "richestWealth": 10731.107944545744,
+      "top10Share": 0.15566796778331907,
+      "top1Share": 0.019178840820183556,
+      "totalWealth": 559528.4952390068,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1917579898,
+    "round": 100,
+    "stateSha256": "666fc1389c64ff455835343607dcac2e06aabc362cb3926c2b31eb8cef117eb6",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Wealth-biased fixed opportunity 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.49815498154981563,
+      "gini": 0.0034247531664505825,
+      "meanWealth": 1002.7,
+      "medianWealth": 1000,
+      "richestWealth": 1040,
+      "top10Share": 0.10292211030218411,
+      "top1Share": 0.01037199561184801,
+      "totalWealth": 100270,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2271577934,
+    "round": 1,
+    "stateSha256": "3903038f400824dae345fdd41c227b574cd6772d4143f7e6e7255378a2685d8e",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.4860988309264175,
+      "gini": 0.01937813144709695,
+      "meanWealth": 1017.9,
+      "medianWealth": 1000,
+      "richestWealth": 1160,
+      "top10Share": 0.10806562530700463,
+      "top1Share": 0.011396011396011397,
+      "totalWealth": 101790,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1240942482,
+    "round": 10,
+    "stateSha256": "7ee1c512b8be38da86fc5c1835d3ebf2ce504639bcc308ca3e1ab01330b7fd1d",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.4613214804684162,
+      "gini": 0.05424480724848271,
+      "meanWealth": 1169.9,
+      "medianWealth": 1157.5,
+      "richestWealth": 1470,
+      "top10Share": 0.11885631250534236,
+      "top1Share": 0.01256517651081289,
+      "totalWealth": 116990,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 3819489850,
+    "round": 100,
+    "stateSha256": "7b282c8bb26a60df713124b239d0db13425f33fbceb5c3c60e284b747eabe4e4",
+  },
+]
+`;
+
+exports[`model v1 exact trajectory regression fixtures > Wealth-biased scalable investment 1`] = `
+[
+  {
+    "metrics": {
+      "bottom50Share": 0.49815498154981563,
+      "gini": 0.0034247531664505825,
+      "meanWealth": 1002.7,
+      "medianWealth": 1000,
+      "richestWealth": 1040,
+      "top10Share": 0.10292211030218411,
+      "top1Share": 0.01037199561184801,
+      "totalWealth": 100270,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 2271577934,
+    "round": 1,
+    "stateSha256": "3903038f400824dae345fdd41c227b574cd6772d4143f7e6e7255378a2685d8e",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.48597716633216925,
+      "gini": 0.01967091208115184,
+      "meanWealth": 1018.1378556000003,
+      "medianWealth": 1000,
+      "richestWealth": 1169.85856,
+      "top10Share": 0.10837481878618004,
+      "top1Share": 0.011490178403302654,
+      "totalWealth": 101813.78556000003,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 1240942482,
+    "round": 10,
+    "stateSha256": "c1bb38eafb2998852f540b4c40b4fb984afde4a5b30510bdac339c1b5326e0a3",
+  },
+  {
+    "metrics": {
+      "bottom50Share": 0.45473284838885236,
+      "gini": 0.06304212971458828,
+      "meanWealth": 1185.220251744728,
+      "medianWealth": 1156.5806653439997,
+      "richestWealth": 1543.288990314764,
+      "top10Share": 0.12305579953334526,
+      "top1Share": 0.013021115594700086,
+      "totalWealth": 118522.02517447282,
+      "zeroWealthCount": 0,
+    },
+    "randomState": 3819489850,
+    "round": 100,
+    "stateSha256": "d5ff72652553ecad9c207994dd03399b038659a9e83bc2343c9da2396d0b8096",
+  },
+]
+`;
