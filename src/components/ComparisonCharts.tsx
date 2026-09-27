@@ -69,7 +69,10 @@ export function ComparisonCharts({
         marginLeft: 65,
         x: {
           label: "Round",
-          domain: [0, Math.max(1, ...scenarios.map((s) => s.state.round))],
+          domain: [
+            Math.min(...scenarios.map(s => s.history[0].round)),
+            Math.max(...scenarios.map(s => Math.max(s.history[0].round + 1, s.state.round))),
+          ],
           tickFormat: "d",
         },
         y: {

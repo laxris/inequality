@@ -70,7 +70,7 @@ export function validateExperiment(
         number(process.opportunityAccessExponent, "Access exponent", 0, 5);
         number(process.baselineOpportunityAccess, "Baseline access", 0, 1e9);
         number(process.fixedCapital, "Fixed capital", 0, 1e9);
-        if (!["fixed", "proportional"].includes(String(process.capitalMode)))
+        if (!["fixed", "proportional"].includes(process.capitalMode as string))
           throw new Error("Unknown capital mode.");
       }
     } else throw new Error("Unknown external process.");
@@ -83,17 +83,17 @@ export function validateExperiment(
     else if (
       policy.type !== "income-tax" ||
       !["external-gains", "transfer-gains", "all-gains"].includes(
-        String(policy.taxableFlows)
+        policy.taxableFlows as string
       )
     )
       throw new Error("Unknown tax policy or income flow.");
   }
   if (config.taxRelief !== undefined) {
     const relief = object(config.taxRelief);
-    if (!["wealthiest", "fixed"].includes(String(relief.eligibility)))
+    if (!["wealthiest", "fixed"].includes(relief.eligibility as string))
       throw new Error("Unknown tax relief eligibility.");
     if (
-      !["income-tax", "wealth-tax", "all"].includes(String(relief.affectedTax))
+      !["income-tax", "wealth-tax", "all"].includes(relief.affectedTax as string)
     )
       throw new Error("Unknown tax relief base.");
     number(relief.fraction, "Relief eligible fraction", 0.01, 1);
@@ -118,4 +118,13 @@ export function experimentUrl(experiment: Experiment, baseUrl: string): string {
   const url = new URL(baseUrl);
   url.searchParams.set("experiment", JSON.stringify(experiment));
   return url.toString();
+}
+
+export function validateComposerExperiment(value: unknown): asserts value is Experiment {
+  validateExperiment(value);
+  if (value.transfers.length > 1 || value.externalProcesses.length > 1 || value.taxes.length > 2 ||
+    value.taxes.filter(t => t.type === "income-tax").length > 1 ||
+    value.taxes.filter(t => t.type === "wealth-tax").length > 1 ||
+    (value.taxes.length === 2 && value.taxes[0].type !== "income-tax"))
+    throw new Error("This composer supports one transfer, one external process, and income tax before wealth tax.");
 }

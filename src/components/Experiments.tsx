@@ -1,3 +1,4 @@
+import ExperimentWorker from "../experiments/runner.worker?worker&inline";
 import { useEffect, useRef, useState } from "react";
 import { presets } from "../simulation/presets";
 import {
@@ -148,10 +149,7 @@ export function Experiments({
     setResult(null);
     setProgress(0);
     try {
-      const worker = new Worker(
-        new URL("../experiments/runner.worker.ts", import.meta.url),
-        { type: "module" }
-      );
+      const worker = new ExperimentWorker();
       workerRef.current = worker;
       worker.onmessage = (event: MessageEvent<BatchMessage>) => {
         if (workerRef.current !== worker) return;

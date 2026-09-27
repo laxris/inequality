@@ -31,8 +31,8 @@ Remaining limitations:
 - The engine accepts multiple processes and taxes, but the composer exposes one
   transfer process, one external process and one of each tax.
 - No progressive tax brackets or configurable unequal starting distributions.
-- No full participant replay, labor income, revenue calibration or saved
-  collections of custom scenarios. Paired multi-seed effects are now available.
+- No full participant replay, labor income or revenue calibration. Paired multi-seed
+  effects and saved workspace JSON are now available.
 
 ## Priority 1 — scenario tabs and comparison (implemented)
 
@@ -323,3 +323,21 @@ tracked separately because undefined correlations need explicit aggregation rule
 Mobility verification: 93 tests and production build pass, including unchanged
 economic trajectory fixtures. Browser checks cover equal-start interpretation,
 reference capture, subsequent movement and mobile help positioning.
+
+## Portable release and saved workspaces — 2026-09-27
+
+- [x] Produce a single self-contained `dist/index.html`: inline JavaScript, styles,
+  favicon and experiment worker. Copy to any directory or static hosting subpath;
+  no deployment base setting or application server required.
+- [x] Yield between live playback batches of at most five rounds; keep the latest
+  2,000 contiguous history points per scenario. Historical comparisons use the
+  overlapping retained rounds. Economic trajectories remain unchanged.
+- [x] Export/import versioned workspace JSON with configurations, valid drafts,
+  participants, PRNG state, Treasury, ledger, history and mobility references.
+  Validate before replacement, preview imported tabs, resume only on user action.
+  Maximum 100 scenarios and 50 MiB per file. Paired results remain a separate export.
+
+Verification: 98 tests pass, including unchanged v1/v2 economic fixtures and exact
+continuation after JSON round-trips. Production build passes. Chrome opened a lone
+HTML file from a nested local directory, completed an inline-worker experiment,
+and exported/imported a workspace before continuing the saved run.

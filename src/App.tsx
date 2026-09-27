@@ -1,13 +1,16 @@
+import { WorkspaceFiles } from "./components/WorkspaceFiles";
 import { useEffect, useReducer, useState } from "react";
 import { ScenarioView } from "./components/ScenarioView";
 import { Comparison } from "./components/Comparison";
 import { Experiments } from "./components/Experiments";
 import { Help } from "./components/Help";
-import { validateExperiment } from "./simulation/config";
+import { validateComposerExperiment } from "./simulation/config";
 import { presets } from "./simulation/presets";
 import type { Experiment } from "./simulation/types";
 import {
   createWorkspace,
+  PLAYBACK_BATCH_LIMIT,
+  SCENARIO_LIMIT,
   hasPendingChanges,
   scenarioName,
   workspaceReducer,
@@ -20,20 +23,7 @@ function loadExperiment(): { config: Experiment; error: string } {
     if (!encoded)
       return { config: structuredClone(presets[0].experiment), error: "" };
     const config: unknown = JSON.parse(encoded);
-    validateExperiment(config);
-    // The first composer exposes one of each control; don't silently hide imported rules.
-    if (
-      config.transfers.length > 1 ||
-      config.externalProcesses.length > 1 ||
-      config.taxes.length > 2 ||
-      config.taxes.filter((t) => t.type === "income-tax").length > 1 ||
-      config.taxes.filter((t) => t.type === "wealth-tax").length > 1 ||
-      (config.taxes.length === 2 && config.taxes[0].type !== "income-tax")
-    ) {
-      throw new Error(
-        "This composer supports one transfer, one external process, and income tax before wealth tax."
-      );
-    }
+    validateComposerExperiment(config);
     return { config, error: "" };
   } catch (error) {
     return {
@@ -47,6 +37,7 @@ function loadExperiment(): { config: Experiment; error: string } {
 
 export default function App() {
   const [initial] = useState(loadExperiment);
+  const [revision, setRevision] = useState(0);
   const [mode, setMode] = useState<"scenarios" | "experiments">("scenarios");
   const [workspace, dispatch] = useReducer(
     workspaceReducer,
@@ -61,12 +52,12 @@ export default function App() {
   const epoch = workspace.playbackEpoch;
   useEffect(() => {
     if (!running || activeId === undefined) return;
-    const timer = window.setInterval(
+    const timer = window.setTimeout(
       () => dispatch({ type: "tick", id: activeId, epoch }),
-      200
+      200 * Math.min(selected!.speed, PLAYBACK_BATCH_LIMIT) / selected!.speed
     );
-    return () => window.clearInterval(timer);
-  }, [activeId, running, epoch]);
+    return () => window.clearTimeout(timer);
+  }, [activeId, running, epoch, selected?.state.round, selected?.speed]);
   useEffect(() => {
     document
       .getElementById(`tab-${workspace.selectedId ?? "comparison"}`)
@@ -82,9 +73,9 @@ export default function App() {
     { id: null, label: "Comparison", round: undefined },
   ];
   return (
-    <main>
+    <main id="top">
       <header className="site-header">
-        <a className="brand" href={window.location.pathname}>
+        <a className="brand" href="#top">
           <span className="brand-mark">w.</span> WEALTH LAB
         </a>
         <span className="badge">A distribution experiment</span>
@@ -124,6 +115,10 @@ export default function App() {
           cancels a running batch.
         </Help>
       </div>
+      <WorkspaceFiles workspace={workspace} restore={value => {
+        dispatch({ type: "restore", workspace: value });
+        setMode("scenarios"); setRevision(v => v + 1);
+      }} />
       <div hidden={mode !== "scenarios"}>
         <div className="scenario-navigation">
           <div role="tablist" aria-label="Scenarios" className="scenario-tabs">
@@ -161,6 +156,8 @@ export default function App() {
             ))}
           </div>
           <button
+            disabled={workspace.scenarios.length >= SCENARIO_LIMIT}
+            title="Up to 100 scenarios per workspace"
             onClick={() =>
               dispatch({ type: "add", config: presets[0].experiment })
             }
@@ -170,7 +167,7 @@ export default function App() {
         </div>
         <p className="hint workspace-note">
           Only the selected scenario can run. Switching tabs pauses playback.
-          Scenarios are kept in this page until reload.
+          Export workspace JSON to save scenarios before leaving. Only the latest 2,000 rounds of history are kept.
         </p>
         {initial.error && (
           <p className="notice" role="status">
@@ -179,7 +176,7 @@ export default function App() {
         )}
         {workspace.scenarios.map((scenario) => (
           <section
-            key={scenario.id}
+            key={`${revision}-${scenario.id}`}
             role="tabpanel"
             id={`panel-${scenario.id}`}
             aria-labelledby={`tab-${scenario.id}`}
@@ -205,7 +202,7 @@ export default function App() {
                     />
                   </label>
                   <button
-                    disabled={hasPendingChanges(scenario)}
+                    disabled={hasPendingChanges(scenario) || workspace.scenarios.length >= SCENARIO_LIMIT}
                     onClick={() => dispatch({ type: "clone", id: scenario.id })}
                   >
                     Clone scenario
@@ -235,14 +232,14 @@ export default function App() {
           hidden={workspace.selectedId !== null}
           tabIndex={0}
         >
-          <Comparison
+          <Comparison key={revision}
             scenarios={workspace.scenarios}
             active={mode === "scenarios" && workspace.selectedId === null}
           />
         </section>
       </div>
       <div hidden={mode !== "experiments"}>
-        <Experiments
+        <Experiments key={revision}
           scenarios={workspace.scenarios}
           active={mode === "experiments"}
         />

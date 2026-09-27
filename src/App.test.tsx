@@ -9,6 +9,8 @@ import {
   within,
 } from "@testing-library/react";
 import App from "./App";
+import { Comparison } from "./components/Comparison";
+import { createWorkspace } from "./workspace";
 import { wealthRadius } from "./components/WealthGrid";
 import { presets } from "./simulation/presets";
 
@@ -206,8 +208,8 @@ describe("scenario workspace", () => {
       target: { value: "100" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Run to target" }));
-    act(() => {
-      vi.advanceTimersByTime(200);
+    for (let batch = 0; batch < 20; batch++) act(() => {
+      vi.advanceTimersByTime(10);
     });
     expect(screen.getByTestId("round").textContent).toBe("100");
     fireEvent.click(screen.getByRole("button", { name: "Clone scenario" }));
@@ -230,8 +232,8 @@ describe("scenario workspace", () => {
     ).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Bottom 50%" }));
     fireEvent.click(screen.getByRole("button", { name: "Run to target" }));
-    act(() => {
-      vi.advanceTimersByTime(200);
+    for (let batch = 0; batch < 20; batch++) act(() => {
+      vi.advanceTimersByTime(10);
     });
     fireEvent.click(screen.getByRole("tab", { name: "Comparison" }));
     fireEvent.change(screen.getByLabelText("Table rounds"), {
@@ -338,4 +340,21 @@ describe("scenario workspace", () => {
     expect(row.textContent).not.toContain("€960.00");
     expect(row.textContent).toContain("€0.00");
   });
+});
+
+
+it("compares retained history by round number after old points are pruned", () => {
+  const scenario = createWorkspace(presets[0].experiment).scenarios[0];
+  scenario.state.round = 11;
+  scenario.history = [
+    { ...scenario.history[0], round: 10, gini: 0.2 },
+    { ...scenario.history[0], round: 11, gini: 0.3 },
+  ];
+  render(<Comparison scenarios={[scenario]} active />);
+  fireEvent.change(screen.getByLabelText("Table rounds"), { target: { value: "historical" } });
+  fireEvent.change(screen.getByLabelText("Comparison round"), { target: { value: "10" } });
+  expect(screen.getByRole("table", { name: "Outcomes at round 10" }).textContent).toContain("0.200");
+  fireEvent.change(screen.getByLabelText("Comparison round"), { target: { value: "0" } });
+  expect(screen.getByRole("alert").textContent).toContain("retained comparison round");
+  expect(screen.queryByRole("table", { name: "Outcomes at round 0" })).toBeNull();
 });

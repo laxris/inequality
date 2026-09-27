@@ -176,7 +176,7 @@ export const explanations: Record<string, string> = {
   "Target round":
     "Run until this round, then pause exactly there. Speed affects presentation only. Switching away pauses the scenario.",
   "Comparison round":
-    "An already completed round shared by every selected scenario. This changes the table only; distribution charts show current states.",
+    "A retained round shared by every selected scenario (latest 2,000 rounds each). This changes the table only; distribution charts show current states.",
   Process:
     "External processes can create or destroy modeled wealth. Independent shocks affect everyone; capital opportunities select recipients; universal returns invest for everyone.",
   "Capital deployed":

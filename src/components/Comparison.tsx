@@ -28,9 +28,10 @@ export function Comparison({
   const latestCommonRound = included.length
     ? Math.min(...included.map((s) => s.state.round))
     : 0;
+  const earliestCommonRound = included.length ? Math.max(...included.map(s => s.history[0].round)) : 0;
   const validRound =
     !historical ||
-    (Number.isSafeInteger(round) && round >= 0 && round <= latestCommonRound);
+    (Number.isSafeInteger(round) && round >= earliestCommonRound && round <= latestCommonRound);
   const mismatched = new Set(included.map((s) => s.state.round)).size > 1;
   const configurations = included.map((s) => configurationEntries(s.config));
   const parameterNames = [
@@ -45,7 +46,7 @@ export function Comparison({
     ? configurationEntries(reference.config)
     : {};
   const metricsFor = (scenario: Scenario) =>
-    historical ? scenario.history[round] : reportedMetrics(scenario.state);
+    historical ? scenario.history.find(point => point.round === round)! : reportedMetrics(scenario.state);
 
   return (
     <div className="comparison-view">
@@ -54,7 +55,7 @@ export function Comparison({
         <h2>Change one rule. Compare the results.</h2>
         <p className="hint">
           All scenarios are paused here. Results use applied configurations;
-          pending edits are not included.
+          pending edits are not included. Only the latest 2,000 rounds per scenario are retained.
         </p>
         {!scenarios.length ? (
           <p className="empty-state">
@@ -156,6 +157,7 @@ export function Comparison({
                 <NumberField
                   label="Comparison round"
                   value={round}
+                  min={earliestCommonRound}
                   max={latestCommonRound}
                   step={1}
                   onChange={setRound}
@@ -181,7 +183,7 @@ export function Comparison({
           )}
           {!validRound && (
             <p className="notice error" role="alert">
-              Choose a whole comparison round from 0 to {latestCommonRound}. No
+              Choose a retained comparison round from {earliestCommonRound} to {latestCommonRound}. If that range is empty, there is no shared retained round. No
               values are extrapolated.
             </p>
           )}

@@ -313,3 +313,13 @@ reversed untied ranks give correlation −1. Equal endpoints have undefined corr
 Capturing a UI reference pauses playback and copies only participants and round;
 it must leave engine state, seed and history unchanged. Reset/clone start at round
 zero. Reference capture is analysis, not a fork or a policy intervention.
+
+## Workspace continuation contract
+
+JSON restoration preserves participant identities, round, PRNG state/model, fiscal
+state and applied configuration. Advancing a restored state by N rounds must equal
+advancing the original state by N rounds exactly, in both randomness versions.
+Import validates finite state, derived metrics and ledger aggregates before replacing
+any workspace. It is not proof of historical provenance and does not replay old rounds.
+Playback batching and pruning old aggregate history must not change engine state or
+future draws. Imports always pause playback and invalidate previously queued ticks.

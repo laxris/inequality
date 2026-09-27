@@ -8,6 +8,10 @@ import type {
   SimulationState,
 } from "./simulation/types";
 
+export const SCENARIO_LIMIT = 100;
+export const HISTORY_LIMIT = 2000;
+export const PLAYBACK_BATCH_LIMIT = 5;
+
 export interface Scenario {
   id: number;
   name: string;
@@ -30,6 +34,7 @@ export interface Workspace {
 }
 export type WorkspaceAction =
   | { type: "pause-all" }
+  | { type: "restore"; workspace: Workspace }
   | { type: "select"; id: number | null }
   | { type: "add"; config: Experiment }
   | {
@@ -100,7 +105,7 @@ function advance(scenario: Scenario, rounds: number): Scenario {
   return {
     ...scenario,
     state,
-    history: [...scenario.history, ...points],
+    history: [...scenario.history, ...points].slice(-HISTORY_LIMIT),
     running: reachedTarget ? false : scenario.running,
     stopAt: reachedTarget ? null : scenario.stopAt,
     error: "",
@@ -111,6 +116,13 @@ export function workspaceReducer(
   workspace: Workspace,
   action: WorkspaceAction
 ): Workspace {
+  if (action.type === "restore") {
+    return {
+      ...action.workspace,
+      playbackEpoch: workspace.playbackEpoch + 1,
+      scenarios: action.workspace.scenarios.map(s => ({ ...s, running: false, stopAt: null })),
+    };
+  }
   // A timer queued before a tab switch, reset or pause must never advance a later run.
   if (
     action.type === "tick" &&
@@ -143,6 +155,7 @@ export function workspaceReducer(
     };
   }
   if (action.type === "add" || action.type === "clone") {
+    if (workspace.scenarios.length >= SCENARIO_LIMIT) return workspace;
     const source =
       action.type === "clone"
         ? workspace.scenarios.find((s) => s.id === action.id)
@@ -150,7 +163,7 @@ export function workspaceReducer(
     if (action.type === "clone" && !source) return workspace;
     const scenario = createScenario(
       workspace.nextId,
-      source ? `${scenarioName(source)} copy` : `Scenario ${workspace.nextId}`,
+      source ? `${scenarioName(source)} copy`.slice(0, 80) : `Scenario ${workspace.nextId}`,
       action.type === "add" ? action.config : source!.config
     );
     if (source) {
@@ -231,9 +244,9 @@ export function workspaceReducer(
           if (!scenario.running) return workspace;
           const rounds =
             scenario.stopAt === null
-              ? scenario.speed
+              ? Math.min(scenario.speed, PLAYBACK_BATCH_LIMIT)
               : Math.min(
-                  scenario.speed,
+                  scenario.speed, PLAYBACK_BATCH_LIMIT,
                   scenario.stopAt - scenario.state.round
                 );
           next = advance(scenario, rounds);

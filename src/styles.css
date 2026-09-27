@@ -855,3 +855,7 @@ footer strong {
     grid-template-columns: 1fr;
   }
 }
+
+.workspace-files { margin-bottom: 24px; }
+.workspace-files > button, .workspace-files > label { display: inline-block; margin: 6px 12px 6px 0; }
+.workspace-files input { max-width: 100%; }

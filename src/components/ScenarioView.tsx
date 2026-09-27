@@ -51,6 +51,10 @@ export function ScenarioView({
     }
   }
   async function share() {
+    if (window.location.protocol === "file:") {
+      setMessage("This is a local file. Use Export workspace JSON to share configurations and saved runs.");
+      return;
+    }
     try {
       const url = experimentUrl(session.config, window.location.href);
       window.history.replaceState(null, "", url);

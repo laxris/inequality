@@ -32,7 +32,7 @@ export function Charts({
         width,
         height: 240,
         marginLeft: 45,
-        x: { label: "Round", domain: [0, Math.max(1, state.round)] },
+        x: { label: "Round", domain: [history[0].round, Math.max(history[0].round + 1, state.round)] },
         y: { label: "Coefficient / share", domain: [0, 1], grid: true },
         color: {
           domain: ["Gini", "Top 10% share", "Bottom 50% share"],
@@ -124,7 +124,7 @@ export function Charts({
     <section className="charts">
       <article className="panel">
         <h2>Inequality over time</h2>
-        <p className="hint">Same seed. Same rules. Reproducible trajectory.</p>
+        <p className="hint">Same seed. Same rules. Reproducible trajectory. Showing retained rounds {history[0].round}–{state.round} (latest 2,000).</p>
         <div ref={historyRef} />
       </article>
       <article className="panel">

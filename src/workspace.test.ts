@@ -165,7 +165,7 @@ describe("scenario isolation and playback", () => {
         value: 100,
       });
       workspace = workspaceReducer(workspace, { type: "run-to-target", id });
-      workspace = tick(workspace);
+      while (workspace.scenarios.find(s => s.id === id)!.running) workspace = tick(workspace);
     }
     const [first, second] = workspace.scenarios;
     expect(first.state.round).toBe(100);
