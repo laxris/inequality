@@ -6,3 +6,4 @@
 /output/
 *.tsbuildinfo
 /.playwright-cli/
+/.claude/
