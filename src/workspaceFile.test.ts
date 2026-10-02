@@ -62,3 +62,60 @@ it("bounds live batches and history without altering simulation outcomes", () =>
   expect(result.state).toEqual(runRounds(original.state, original.config, HISTORY_LIMIT + 7));
   expect(parseWorkspaceFile(serializeWorkspaceFile(workspace)).scenarios[0]).toEqual(result);
 });
+
+it("round-trips a valid share slightly above one without changing the saved trajectory", () => {
+  const config = {
+    ...presets[0].experiment,
+    version: 2 as const,
+    seed: 0,
+    transfers: [],
+    externalProcesses: [{
+      type: "multiplicative-returns" as const,
+      investmentFraction: 1,
+      successProbability: 0.8,
+      successReturn: 0.4,
+      failureReturn: -1,
+    }],
+  };
+  let workspace = createWorkspace(config);
+  for (let i = 0; i < 12; i++) workspace = workspaceReducer(workspace, { type: "step", id: 1 });
+  const source = workspace.scenarios[0];
+  expect(source.state.metrics.top10Share).toBeGreaterThan(1);
+  const contents = serializeWorkspaceFile(workspace);
+  const restored = parseWorkspaceFile(contents).scenarios[0];
+  expect(restored).toEqual(source);
+  expect(runRounds(restored.state, restored.config, 9)).toEqual(runRounds(source.state, source.config, 9));
+  const file = JSON.parse(contents);
+  file.scenarios[0].history[0].top10Share = 1.001;
+  expect(() => parseWorkspaceFile(JSON.stringify(file))).toThrow("top10Share");
+});
+
+it("reconciles the latest Treasury and modeled wealth changes with the ledger", () => {
+  for (const version of [1, 2] as const) for (const retain of [false, true]) {
+    let workspace = createWorkspace({
+      ...presets[0].experiment,
+      version,
+      transfers: [],
+      externalProcesses: [{ type: "independent-shocks", amount: 50 }],
+      taxes: [{ type: "wealth-tax", rate: 0.01, exemption: 0 }],
+      redistribution: { type: retain ? "retain" : "universal" },
+    });
+    for (let i = 0; i < 2; i++) workspace = workspaceReducer(workspace, { type: "step", id: 1 });
+    const contents = serializeWorkspaceFile(workspace);
+    expect(parseWorkspaceFile(contents).scenarios[0]).toEqual(workspace.scenarios[0]);
+
+    const missingTreasury = JSON.parse(contents);
+    const scenario = missingTreasury.scenarios[0];
+    const treasury = retain ? 0 : 1000;
+    scenario.state.treasury = treasury;
+    scenario.history.at(-1).treasury = treasury;
+    scenario.history.at(-1).totalModeledWealth = scenario.state.metrics.totalWealth + treasury;
+    expect(() => parseWorkspaceFile(JSON.stringify(missingTreasury))).toThrow("Treasury change");
+
+    const missingWealth = JSON.parse(contents);
+    const previous = missingWealth.scenarios[0].history.at(-2);
+    previous.totalWealth += 1000;
+    previous.totalModeledWealth += 1000;
+    expect(() => parseWorkspaceFile(JSON.stringify(missingWealth))).toThrow("total modeled wealth change");
+  }
+});

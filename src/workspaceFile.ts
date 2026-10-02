@@ -5,6 +5,7 @@ import { HISTORY_LIMIT, SCENARIO_LIMIT, type Workspace, type Scenario } from "./
 import type { Experiment, Participant, SimulationState, HistoryPoint } from "./simulation/types";
 
 export const WORKSPACE_FILE_LIMIT = 50 * 1024 * 1024;
+const NUMERICAL_TOLERANCE = 1e-9;
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("Expected an object in workspace file.");
   return value as Record<string, unknown>;
@@ -24,7 +25,7 @@ function array(value: unknown, max: number): unknown[] {
   return value;
 }
 function close(actual: number, expected: number, label: string) {
-  if (!Number.isFinite(actual) || !Number.isFinite(expected) || Math.abs(actual - expected) > 1e-9 * Math.max(1, Math.abs(actual), Math.abs(expected)))
+  if (!Number.isFinite(actual) || !Number.isFinite(expected) || Math.abs(actual - expected) > NUMERICAL_TOLERANCE * Math.max(1, Math.abs(actual), Math.abs(expected)))
     throw Error(`Inconsistent ${label} in workspace file.`);
 }
 function participants(value: unknown): Participant[] {
@@ -119,7 +120,8 @@ export function parseWorkspaceFile(contents: string): Workspace {
       const r = object(point);
       const metrics = numericFields(r, reportedMetrics(current));
       for (const key of ["gini", "top1Share", "top5Share", "top10Share", "bottom50Share"] as const)
-        number(metrics[key], key, 1);
+        // Preserve the exact reported value, including harmless summation error.
+        number(metrics[key], key, 1 + NUMERICAL_TOLERANCE);
       number(metrics.zeroWealthCount, "zero-wealth count", 100, true);
       close(metrics.totalModeledWealth, metrics.totalWealth + metrics.treasury, "historical total wealth");
       return { ...metrics, round: round(r.round) };
@@ -127,6 +129,24 @@ export function parseWorkspaceFile(contents: string): Workspace {
     if (!history.length || history.at(-1)!.round !== current.round || history.some((p, i) => i > 0 && p.round !== history[i-1].round + 1))
       throw Error("History must be contiguous and end at the current round.");
     for (const [key, value] of Object.entries(reportedMetrics(current))) close((history.at(-1)! as unknown as Record<string, number>)[key], value, `latest history ${key}`);
+    const previous = history.at(-2);
+    if (previous) {
+      const latest = history.at(-1)!;
+      const ledger = current.ledger;
+      // Normalize before subtraction to handle cancellation and near-limit balances.
+      const fiscalScale = Math.max(1, previous.treasury, latest.treasury, ledger.taxesCollected, ledger.redistributionPaid);
+      close(
+        latest.treasury / fiscalScale - previous.treasury / fiscalScale,
+        ledger.taxesCollected / fiscalScale - ledger.redistributionPaid / fiscalScale,
+        "Treasury change"
+      );
+      const wealthScale = Math.max(1, previous.totalModeledWealth, latest.totalModeledWealth, ledger.externalWealthCreated, ledger.externalWealthDestroyed);
+      close(
+        latest.totalModeledWealth / wealthScale - previous.totalModeledWealth / wealthScale,
+        ledger.externalWealthCreated / wealthScale - ledger.externalWealthDestroyed / wealthScale,
+        "total modeled wealth change"
+      );
+    }
     const speed = number(raw.speed, "speed");
     if (![1, 5, 20, 100].includes(speed)) throw Error("Unsupported playback speed.");
     if (typeof raw.running !== "boolean") throw Error("Missing playback status.");

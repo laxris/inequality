@@ -341,3 +341,18 @@ Verification: 98 tests pass, including unchanged v1/v2 economic fixtures and exa
 continuation after JSON round-trips. Production build passes. Chrome opened a lone
 HTML file from a nested local directory, completed an inline-worker experiment,
 and exported/imported a workspace before continuing the saved run.
+
+## Review fixes — 2026-10-02
+
+- [x] Preserve valid share values slightly above one due to floating-point summation
+  in workspace JSON; still reject meaningful out-of-range values.
+- [x] Preserve every successful playback round before overflow, pause at the last
+  valid state, and keep that state exportable at every supported speed.
+- [x] Reconcile the latest Treasury and total modeled wealth changes with the saved
+  ledger when a preceding history point exists, including very large finite balances.
+- [x] Shorten the UI comparison acceptance test horizon; retain longer-run coverage
+  in pure workspace tests and exact seeded simulation fixtures.
+
+Verification: all 101 tests, type checking and the portable production build pass.
+Both randomness versions retain unchanged economic fixtures and exact continuation
+after JSON restoration.

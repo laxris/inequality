@@ -207,11 +207,15 @@ describe("scenario workspace", () => {
     fireEvent.change(screen.getByLabelText("Speed"), {
       target: { value: "100" },
     });
+    // Exercise the complete UI flow with a short horizon; reducer tests cover 100 rounds.
+    fireEvent.change(screen.getByLabelText("Target round"), {
+      target: { value: "10" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Run to target" }));
-    for (let batch = 0; batch < 20; batch++) act(() => {
+    for (let batch = 0; batch < 2; batch++) act(() => {
       vi.advanceTimersByTime(10);
     });
-    expect(screen.getByTestId("round").textContent).toBe("100");
+    expect(screen.getByTestId("round").textContent).toBe("10");
     fireEvent.click(screen.getByRole("button", { name: "Clone scenario" }));
     fireEvent.change(screen.getByLabelText("Scenario name"), {
       target: { value: "Bottom 50%" },
@@ -232,7 +236,7 @@ describe("scenario workspace", () => {
     ).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Bottom 50%" }));
     fireEvent.click(screen.getByRole("button", { name: "Run to target" }));
-    for (let batch = 0; batch < 20; batch++) act(() => {
+    for (let batch = 0; batch < 2; batch++) act(() => {
       vi.advanceTimersByTime(10);
     });
     fireEvent.click(screen.getByRole("tab", { name: "Comparison" }));
@@ -263,7 +267,7 @@ describe("scenario workspace", () => {
     expect(backward).not.toBe(forward);
     fireEvent.click(screen.getByRole("tab", { name: "Bottom 50%" }));
     fireEvent.click(screen.getByRole("button", { name: "Delete scenario" }));
-    expect(screen.getByTestId("round").textContent).toBe("100");
+    expect(screen.getByTestId("round").textContent).toBe("10");
     fireEvent.click(screen.getByRole("tab", { name: "Comparison" }));
     expect(screen.queryByRole("checkbox", { name: /Bottom 50%/ })).toBeNull();
   });

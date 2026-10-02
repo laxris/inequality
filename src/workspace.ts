@@ -96,9 +96,16 @@ const pause = (scenario: Scenario): Scenario =>
 function advance(scenario: Scenario, rounds: number): Scenario {
   let state = scenario.state;
   const points: HistoryPoint[] = [];
+  let error = "";
   for (let round = 0; round < rounds; round++) {
-    state = stepSimulation(state, scenario.config);
-    points.push({ round: state.round, ...reportedMetrics(state) });
+    try {
+      const next = stepSimulation(state, scenario.config);
+      points.push({ round: next.round, ...reportedMetrics(next) });
+      state = next;
+    } catch (cause) {
+      error = cause instanceof Error ? cause.message : "Simulation could not advance.";
+      break;
+    }
   }
   const reachedTarget =
     scenario.stopAt !== null && state.round >= scenario.stopAt;
@@ -106,9 +113,9 @@ function advance(scenario: Scenario, rounds: number): Scenario {
     ...scenario,
     state,
     history: [...scenario.history, ...points].slice(-HISTORY_LIMIT),
-    running: reachedTarget ? false : scenario.running,
-    stopAt: reachedTarget ? null : scenario.stopAt,
-    error: "",
+    running: error || reachedTarget ? false : scenario.running,
+    stopAt: error || reachedTarget ? null : scenario.stopAt,
+    error,
   };
 }
 

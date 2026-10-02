@@ -104,6 +104,8 @@ checkpoint. Charting and worker scheduling cannot affect simulation outcomes.
 Changing this order changes the model. No policy or economic outcome depends on
 playback speed. Invalid configuration/state must throw without committing a partial
 round. A simulation that overflows stops; do not silently clamp large wealth.
+Playback must retain every completed round before the failing round, regardless
+of batch size, and pause with its ledger and history at the last valid state.
 
 ## Transfers
 
@@ -320,6 +322,10 @@ JSON restoration preserves participant identities, round, PRNG state/model, fisc
 state and applied configuration. Advancing a restored state by N rounds must equal
 advancing the original state by N rounds exactly, in both randomness versions.
 Import validates finite state, derived metrics and ledger aggregates before replacing
-any workspace. It is not proof of historical provenance and does not replay old rounds.
+any workspace. With a preceding history point, reconcile the latest Treasury change
+with taxes minus redistribution and modeled wealth change with external creation
+minus destruction. Use scale-aware floating-point tolerance, preserving exact stored
+values, including tiny share overshoots. It is not proof of historical provenance
+and does not replay old rounds.
 Playback batching and pruning old aggregate history must not change engine state or
 future draws. Imports always pause playback and invalidate previously queued ticks.

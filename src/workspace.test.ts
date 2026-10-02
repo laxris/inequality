@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createWorkspace, workspaceReducer, type Workspace } from "./workspace";
 import { presets } from "./simulation/presets";
 import { runRounds } from "./simulation/engine";
+import { parseWorkspaceFile, serializeWorkspaceFile } from "./workspaceFile";
 
 const initial = () => createWorkspace(presets[6].experiment);
 const tick = (workspace: Workspace) =>
@@ -10,6 +11,42 @@ const tick = (workspace: Workspace) =>
     id: workspace.selectedId!,
     epoch: workspace.playbackEpoch,
   });
+
+it("preserves every successful round before overflow at all playback speeds", () => {
+  const config = {
+    ...presets[0].experiment,
+    version: 2 as const,
+    seed: 0,
+    initialWealth: 1e9,
+    transfers: [],
+    externalProcesses: [{
+      type: "multiplicative-returns" as const,
+      investmentFraction: 1,
+      successProbability: 1,
+      successReturn: 1,
+      failureReturn: 0,
+    }],
+  };
+  let expected: Workspace | undefined;
+  for (const speed of [1, 5, 20, 100]) {
+    let workspace = createWorkspace(config);
+    workspace = workspaceReducer(workspace, { type: "speed", id: 1, value: speed });
+    workspace = workspaceReducer(workspace, { type: "target", id: 1, value: 1000 });
+    workspace = workspaceReducer(workspace, { type: "run-to-target", id: 1 });
+    while (workspace.scenarios[0].running) workspace = tick(workspace);
+    const result = workspace.scenarios[0];
+    expect(result.state.round).toBe(987);
+    expect(result.history.at(-1)!.round).toBe(987);
+    expect(result.stopAt).toBeNull();
+    expect(result.error).toContain("overflowed");
+    expect(tick(workspace)).toBe(workspace);
+    if (!expected) expected = workspace;
+    expect(result.state).toEqual(expected.scenarios[0].state);
+    expect(result.history).toEqual(expected.scenarios[0].history);
+    // Large finite balances must remain exportable after the failed round.
+    expect(parseWorkspaceFile(serializeWorkspaceFile(workspace)).scenarios[0]).toEqual(result);
+  }
+});
 
 describe("scenario isolation and playback", () => {
   it("clones applied rules into independent paused state at round zero", () => {
